@@ -1,7 +1,7 @@
 div.Block {
   width: 130px;
   height: 100%;
-  background-color: #e2e2e2;
+  background-color: #efefef;
   display: inline-block;
   margin-right: 15px;
   border-radius: 3%;
@@ -15,53 +15,54 @@ h1.Value {
 }
 
 div.Value-0 {
-  color: #e2e2e2 !important;
+  color: #efefef !important;
 }
+
 div.Value-2 {
-  color: grey;
-  background-color: #f6ffec;
+  color: #666666;
+  background-color: #aee6ff;
 }
 
 div.Value-4 {
-  color: grey;
-  background-color: #abff83;
+  color: #666666;
+  background-color: #7fffb6;
 }
 
 div.Value-8 {
-  color: grey;
-  background-color: #cbf462;
+  color: #666666;
+  background-color: #8cff3b;
 }
 
 div.Value-16 {
-  color: grey;
-  background-color: #f3f652;
+  color: #666666;
+  background-color: #f3ff35;
 }
 
 div.Value-32 {
-  background-color: #eec444;
+  color: #666666;
+  background-color: #ffb400;
 }
 
 div.Value-64 {
-  background-color: #f4904e;
+  background-color: #fd6d2d;
 }
 
 div.Value-128 {
-  background-color: #f66f93;
+  background-color: #ff2727;
 }
 
-
 div.Value-256 {
-  background-color: #e162ff;
+  background-color: #ff4778;
 }
 
 div.Value-512 {
-  background-color: #ac67ff;
+  background-color: #ff5aec;
 }
 
 div.Value-1024 {
-  background-color: #6d39f4;
+  background-color: #aa55ff;
 }
 
 div.Value-2048 {
-  background-color: #324fe5;
+  background-color: #6048ec;
 }

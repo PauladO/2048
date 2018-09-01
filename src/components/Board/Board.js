@@ -9,14 +9,16 @@ class Board extends PureComponent {
   }
 
   handleMove(event){
+    var newGrid = this.emptyGrid()
+
     if(event.keyCode === 37) {
-      this.moveLeft()
+      this.moveLeft(newGrid)
     } else if(event.keyCode === 38) {
-      this.moveUp()
+      this.moveUp(newGrid)
     } else if(event.keyCode === 39) {
-      this.moveRight()
+      this.moveRight(newGrid)
     } else if(event.keyCode === 40) {
-      this.moveDown()
+      this.moveDown(newGrid)
     }
   }
 
@@ -32,118 +34,101 @@ class Board extends PureComponent {
   }
 
 
-  moveLeft() {
-    var newBlocks =  [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ]
-
+  moveLeft(newGrid) {
     this.state.blocks.forEach((line, lineIndex) => {
       var lastPlacedAt = -1
       line.forEach((block, blockIndex) => {
-        if(block > 0) {
+        if(block > 0 && block == newGrid[lineIndex][lastPlacedAt]) {
+          newGrid[lineIndex][lastPlacedAt] = block * 2
+        } else if(block > 0) {
           lastPlacedAt ++
-          newBlocks[lineIndex][lastPlacedAt] = block
+          newGrid[lineIndex][lastPlacedAt] = block
         }
       })
     })
+    var newBlocks = this.setNewBlocks(newGrid, 1)
 
     this.setState({blocks: newBlocks})
   }
 
-  moveRight() {
-    var newBlocks =  [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ]
-
+  moveRight(newGrid) {
     this.state.blocks.forEach((line, lineIndex) => {
       var lastPlacedAt = 4
       line.reverse().forEach((block, blockIndex) => {
-        if(block > 0) {
+        if(block > 0 && block == newGrid[lineIndex][lastPlacedAt]) {
+          newGrid[lineIndex][lastPlacedAt] = block * 2
+        } else if(block > 0) {
           lastPlacedAt--
-          newBlocks[lineIndex][lastPlacedAt] = block
+          newGrid[lineIndex][lastPlacedAt] = block
         }
       })
     })
 
+    var newBlocks = this.setNewBlocks(newGrid, 1)
+
     this.setState({blocks: newBlocks})
   }
 
-  moveUp() {
-    var newBlocks =  [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ]
-
+  moveUp(newGrid) {
     for(var i = 0; i < 4; i++){
       var lastPlacedAt = -1
       this.state.blocks.forEach((line, lineIndex) => {
-        if(line[i] > 0) {
+        if( line[i] > 0 && newGrid[lastPlacedAt] && line[i] == newGrid[lastPlacedAt][i]) {
+          newGrid[lastPlacedAt][i] =  line[i] * 2
+        } else if(line[i] > 0) {
           lastPlacedAt++
-          newBlocks[lastPlacedAt][i] = line[i]
+          newGrid[lastPlacedAt][i] = line[i]
         }
       })
     }
+
+    var newBlocks = this.setNewBlocks(newGrid, 1)
+
     this.setState({blocks: newBlocks})
   }
 
-    moveDown() {
-      var newBlocks =  [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
-      ]
-
-      for(var i = 0; i < 4; i++){
-        var lastPlacedAt = 4
-        this.state.blocks.reverse().forEach((line, lineIndex) => {
-          if(line[i] > 0) {
-            lastPlacedAt--
-            newBlocks[lastPlacedAt][i] = line[i]
-          }
-        })
+  moveDown(newGrid) {
+    for(var i = 0; i < 4; i++){
+      var lastPlacedAt = 4
+      for(var j = 3; j >= 0; j--) {
+        console.log('meh')
+        if(this.state.blocks[j][i] > 0 && newGrid[lastPlacedAt] && this.state.blocks[j][i] == newGrid[lastPlacedAt][i]) {
+          newGrid[lastPlacedAt][i] = this.state.blocks[j][i] *2
+        } else if(this.state.blocks[j][i] > 0) {
+          lastPlacedAt--
+          newGrid[lastPlacedAt][i] = this.state.blocks[j][i]
+        }
       }
-      this.setState({blocks: newBlocks})
     }
+    var newBlocks = this.setNewBlocks(newGrid, 1)
+    this.setState({blocks: newBlocks})
+  }
 
 
   setStartState() {
-    const blocks = this.setBlocks()
+    const grid = this.emptyGrid()
+
+    const blocks = this.setNewBlocks(grid, 2)
 
     this.setState({
         blocks: blocks
     })
   }
 
-  setBlocks() {
-    const blocks = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ]
-
+  setNewBlocks(grid, numberOfBlocks) {
     var placed = 0
 
-    while(placed < 2) {
+    while(placed < numberOfBlocks) {
       const xIndex = this.generateIndex()
       const yIndex = this.generateIndex()
       const blockValue = this.generateNumber()
-      if(blocks[yIndex][xIndex] === 0) {
-        blocks[yIndex][xIndex] = blockValue
+      if(grid[yIndex][xIndex] === 0) {
+        grid[yIndex][xIndex] = blockValue
         placed++
       }
     }
 
-    return blocks
+    return grid
   }
 
   generateIndex() {
@@ -154,23 +139,27 @@ class Board extends PureComponent {
   generateNumber() {
     const odds = Math.random();
 
-    if(odds < 0.8) {
+    if(odds < 0.95) {
       return 2
     } else {
       return 4
     }
   }
 
-  moveBlocks(e) {
-      console.log(e);
-      // prints either LoginInput or PwdInput
+  emptyGrid() {
+    return [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ]
   }
 
   render() {
 
     return (
       <div className="Board">
-        <BlockGrid onKeyDown={ this.moveBlocks() } blocks={ this.state.blocks } />
+        <BlockGrid blocks={ this.state.blocks } />
       </div>
     )
   }
