@@ -2,6 +2,7 @@
   "name": "2048",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "dependencies": {
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
