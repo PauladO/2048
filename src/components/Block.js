@@ -3,9 +3,12 @@ import './Block.css'
 
 class Block extends PureComponent {
   render() {
+    const klassName = "Block Value-" + this.props.value
     return (
-      <div class="Block">
-        { this.props.value }
+      <div className={ klassName }>
+        <h1 className="Value">
+          { this.props.value }
+        </h1>
       </div>
     )
   }

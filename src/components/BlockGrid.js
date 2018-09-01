@@ -1,16 +1,18 @@
 import React, { PureComponent } from 'react'
 import Block from './Block'
+import './BlockGrid.css'
 
 class BlockGrid extends PureComponent {
   render() {
+    console.log(this.props);
     return (
-      <div class="BlockGrid">
-        { this.props.blocks.map((line, index) => {
+      <div className="BlockGrid">
+        { this.props.blocks.map((line, lineIndex) => {
           return(
-            <div class="Line">
-              { line.map((block, index) => {
+            <div className="Line" key={ lineIndex }>
+              { line.map((block, blockIndex) => {
                   return(
-                    <Block value={ block } />
+                    <Block key={ blockIndex } value={ block } />
                   )
                 })
               }

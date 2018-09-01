@@ -8,7 +8,7 @@ class App extends Component {
     return (
       <div>
         <Title content="2048" />
-        <div class="BoardWrapper">
+        <div className="BoardWrapper">
           <Board />
         </div>
       </div>

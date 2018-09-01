@@ -1,0 +1,8 @@
+div.Board {
+  width: 600px;
+  height: 600px;
+  background-color: #c6c6c6;
+  border-radius: 1%;
+  box-sizing: border-box;
+  padding: 15px 0 0 15px;
+}
