@@ -33,8 +33,7 @@ class Board extends PureComponent {
     this.setStartState()
   }
 
-
-  moveLeft(newGrid) {
+  moveBlocksLeft(newGrid) {
     this.state.blocks.forEach((line, lineIndex) => {
       var lastPlacedAt = -1
       line.forEach((block, blockIndex) => {
@@ -46,7 +45,13 @@ class Board extends PureComponent {
         }
       })
     })
-    var newBlocks = this.setNewBlocks(newGrid, 1)
+    return newGrid
+  }
+
+
+  moveLeft(newGrid) {
+    var newBlocks  = this.moveBlocksLeft(newGrid)
+    newBlocks = this.addNewBlocks(newBlocks, 1)
 
     this.setState({blocks: newBlocks})
   }
@@ -64,7 +69,7 @@ class Board extends PureComponent {
       })
     })
 
-    var newBlocks = this.setNewBlocks(newGrid, 1)
+    var newBlocks = this.addNewBlocks(newGrid, 1)
 
     this.setState({blocks: newBlocks})
   }
@@ -82,7 +87,7 @@ class Board extends PureComponent {
       })
     }
 
-    var newBlocks = this.setNewBlocks(newGrid, 1)
+    var newBlocks = this.addNewBlocks(newGrid, 1)
 
     this.setState({blocks: newBlocks})
   }
@@ -91,7 +96,6 @@ class Board extends PureComponent {
     for(var i = 0; i < 4; i++){
       var lastPlacedAt = 4
       for(var j = 3; j >= 0; j--) {
-        console.log('meh')
         if(this.state.blocks[j][i] > 0 && newGrid[lastPlacedAt] && this.state.blocks[j][i] == newGrid[lastPlacedAt][i]) {
           newGrid[lastPlacedAt][i] = this.state.blocks[j][i] *2
         } else if(this.state.blocks[j][i] > 0) {
@@ -100,7 +104,7 @@ class Board extends PureComponent {
         }
       }
     }
-    var newBlocks = this.setNewBlocks(newGrid, 1)
+    var newBlocks = this.addNewBlocks(newGrid, 1)
     this.setState({blocks: newBlocks})
   }
 
@@ -108,14 +112,14 @@ class Board extends PureComponent {
   setStartState() {
     const grid = this.emptyGrid()
 
-    const blocks = this.setNewBlocks(grid, 2)
+    const blocks = this.addNewBlocks(grid, 2)
 
     this.setState({
         blocks: blocks
     })
   }
 
-  setNewBlocks(grid, numberOfBlocks) {
+  addNewBlocks(grid, numberOfBlocks) {
     var placed = 0
 
     while(placed < numberOfBlocks) {
