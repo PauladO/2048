@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Title from './components/Title'
-import Board from './components/Board'
+import Title from './components/Title/Title'
+import Board from './components/Board/Board'
 
 class App extends Component {
   render() {

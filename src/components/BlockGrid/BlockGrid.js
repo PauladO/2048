@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react'
-import Block from './Block'
+import Block from '../Block/Block'
 import './BlockGrid.css'
 
 class BlockGrid extends PureComponent {
   render() {
-    console.log(this.props);
+    const blocks = this.props.blocks
     return (
       <div className="BlockGrid">
-        { this.props.blocks.map((line, lineIndex) => {
+        { blocks.map((line, lineIndex) => {
           return(
             <div className="Line" key={ lineIndex }>
               { line.map((block, blockIndex) => {
