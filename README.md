@@ -1,6 +1,6 @@
 # 2048 Game
 
-A simpe game to refresh my JavaScript/React skills. Still needs a refactor.
+A simple game to refresh my JavaScript/React skills. No redux, only front end, and still needs a good refactor.
 
 
 ----
