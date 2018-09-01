@@ -5,18 +5,18 @@ import './Board.css'
 class Board extends PureComponent {
   constructor(props){
     super(props);
-    this.escFunction = this.handleMove.bind(this);
+    this.handleMove = this.handleMove.bind(this);
   }
 
   handleMove(event){
     if(event.keyCode === 37) {
-      console.log("left");
+      this.moveLeft()
     } else if(event.keyCode === 38) {
-      console.log("up");
+      this.moveUp()
     } else if(event.keyCode === 39) {
-      console.log("right");
+      this.moveRight()
     } else if(event.keyCode === 40) {
-      console.log("down");
+      this.moveDown()
     }
   }
 
@@ -30,6 +30,90 @@ class Board extends PureComponent {
   componentWillMount() {
     this.setStartState()
   }
+
+
+  moveLeft() {
+    var newBlocks =  [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ]
+
+    this.state.blocks.forEach((line, lineIndex) => {
+      var lastPlacedAt = -1
+      line.forEach((block, blockIndex) => {
+        if(block > 0) {
+          lastPlacedAt ++
+          newBlocks[lineIndex][lastPlacedAt] = block
+        }
+      })
+    })
+
+    this.setState({blocks: newBlocks})
+  }
+
+  moveRight() {
+    var newBlocks =  [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ]
+
+    this.state.blocks.forEach((line, lineIndex) => {
+      var lastPlacedAt = 4
+      line.reverse().forEach((block, blockIndex) => {
+        if(block > 0) {
+          lastPlacedAt--
+          newBlocks[lineIndex][lastPlacedAt] = block
+        }
+      })
+    })
+
+    this.setState({blocks: newBlocks})
+  }
+
+  moveUp() {
+    var newBlocks =  [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ]
+
+    for(var i = 0; i < 4; i++){
+      var lastPlacedAt = -1
+      this.state.blocks.forEach((line, lineIndex) => {
+        if(line[i] > 0) {
+          lastPlacedAt++
+          newBlocks[lastPlacedAt][i] = line[i]
+        }
+      })
+    }
+    this.setState({blocks: newBlocks})
+  }
+
+    moveDown() {
+      var newBlocks =  [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ]
+
+      for(var i = 0; i < 4; i++){
+        var lastPlacedAt = 4
+        this.state.blocks.reverse().forEach((line, lineIndex) => {
+          if(line[i] > 0) {
+            lastPlacedAt--
+            newBlocks[lastPlacedAt][i] = line[i]
+          }
+        })
+      }
+      this.setState({blocks: newBlocks})
+    }
+
 
   setStartState() {
     const blocks = this.setBlocks()
@@ -47,11 +131,16 @@ class Board extends PureComponent {
       [0, 0, 0, 0]
     ]
 
-    for(var i = 0; i < 2; i++) {
+    var placed = 0
+
+    while(placed < 2) {
       const xIndex = this.generateIndex()
       const yIndex = this.generateIndex()
       const blockValue = this.generateNumber()
-      blocks[yIndex][xIndex] = blockValue
+      if(blocks[yIndex][xIndex] === 0) {
+        blocks[yIndex][xIndex] = blockValue
+        placed++
+      }
     }
 
     return blocks
