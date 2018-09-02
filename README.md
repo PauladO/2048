@@ -5,7 +5,12 @@ A simple game to refresh my JavaScript/React skills. No redux, only front end, a
 ### To do:
 
 - refactor
-- The current set up calculates a new grid entirely. It would be better to just have block objects, with an x and y index. Then calculating the new index. That way I can add animation to the blocks.
+- The current set up calculates a new grid entirely. It would be better to just have block objects, with an x and y index. Then calculating the new index. That way I can add animation to the blocks. To dos for this are:
+  - create blocks as objects with x and y index
+  - calculate new x and y positions for movement
+  - display empty grid background
+  - overlay blocks with absolute position
+  - animate movement
 
 
 ----
