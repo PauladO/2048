@@ -1,32 +1,25 @@
 import React, { PureComponent } from 'react'
-import BlockGrid from '../BlockGrid/BlockGrid'
 import Block from '../Block/Block'
-import './Board.css'
+import '../BlockGrid/BlockGrid.css'
 
-class Board extends PureComponent {
+class Blocks extends PureComponent {
   constructor(props){
     super(props);
     this.handleMove = this.handleMove.bind(this);
-    this.hasMoved = false
-    this.availableCoordinates = [
-      [0,0], [0,1], [0,2], [0,3],
-      [1,0], [1,1], [1,2], [1,3],
-      [2,0], [2,1], [2,2], [2,3],
-      [3,0], [3,1], [3,2], [3,3]
-    ]
   }
 
   handleMove(event){
+    console.log("handling");
     if(event.keyCode === 37) {
       this.moveLeft()
     }
   //  if(event.keyCode === 38) {
   //     this.moveUp(newGrid)
   //   }
-  //  if(event.keyCode === 39) {
+  // if(event.keyCode === 39) {
   //     this.moveRight(newGrid)
   //   }
-  //  if(event.keyCode === 40) {
+  // if(event.keyCode === 40) {
   //     this.moveDown(newGrid)
   //   }
   }
@@ -45,11 +38,12 @@ class Board extends PureComponent {
 
   setStartState() {
     const blocks = []
-    const block1 = this.generateBlock()
+    const block1 = this.generateBlock(blocks)
     blocks.push(block1)
-    const block2 = this.generateBlock()
+    const block2 = this.generateBlock(blocks)
     blocks.push(block2)
 
+    console.log("generated");
     this.setState({
         blocks: blocks
     })
@@ -70,56 +64,37 @@ class Board extends PureComponent {
     }
   }
 
-  moveBlock(block) {
-    for (var i = 0; i < block.xIndex; i++)  {
-      var blockAtIndex = this.state.blocks.find((blck) => { return blck.yIndex == block.yIndex && blck.xIndex === i})
-
-      if (blockAtIndex && blockAtIndex.value === block.value && !blockAtIndex.merged) {
-        block.value = block.value * 2
-        block.xIndex = i
-        block.merged = true
-        this.state.blocks.find((blck) => { return blck.xIndex === i}).hide = true
-        this.hasMoved = true
-      } else if (blockAtIndex) {
-        continue
-      } else {
-        block.xIndex = i
-        this.hasMoved = true
-
-        break
-      }
-    }
-    return block
-  }
-
   moveBlocksLeft() {
+    var hasMoved = false
     var updatedBlocks = this.state.blocks.map((block, index) => {
-
-      this.moveBlock(block)
-
+      for (var i = 0; i < block.xIndex; i++)  {
+        var blockAtIndex = this.state.blocks.find((blck) => { return blck.xIndex === i})
+        if (blockAtIndex && blockAtIndex.value === block.value) {
+          block.hide = true
+          block.merged = true
+          this.state.blocks.find((blck) => { return blck.xIndex === i}).value = block.value * 2
+        } else if (blockAtIndex) {
+          continue
+        } else {
+          block.xIndex = i
+          break
+        }
+      }
       return block
     })
-
-    if(this.hasMoved) {
-      updatedBlocks.push(this.generateBlock())
-    }
+    console.log('moved');
     return updatedBlocks
   }
 
-
   moveLeft() {
-    var newBlocks  = this.moveBlocksLeft()
+    console.log("moving");
+    this.moveBlocksLeft()
 
-    this.setBoard(newBlocks)
+    newBlocks = this.generateBlock(newBlocks)
 
+    this.setState({blocks: newBlocks})
   }
-
-  setBoard(newBlocks) {
-    this.setState({blocks: newBlocks}) //Moves blocks
-    const blocks =  newBlocks.filter(block => block.hide !== true);
-    this.setState({blocks: blocks}) //removes hidden
-  }
-
+  //
   // moveRight(newGrid) {
   //   this.state.blocks.forEach((line, lineIndex) => {
   //     var lastPlacedAt = 4
@@ -197,30 +172,36 @@ class Board extends PureComponent {
 
 
 
-  generateBlock() {
-    var available = this.availableCoordinates
-    var randomIndex = Math.floor(Math.random() * available.length)
-    var coordinates = available[randomIndex]
-    const newBlock = { xIndex: coordinates[0], yIndex: coordinates[1], value: this.generateNumber() }
-    console.log(coordinates);
-    available.splice(randomIndex, 1)
-    console.log(available);
+  generateBlock(blocks) {
+    var indexOptions = [
+      [0,0], [0,1], [0,2], [0,3],
+      [1,0], [1,1], [1,2], [1,3],
+      [2,0], [2,1], [2,2], [2,3],
+      [3,0], [3,1], [3,2], [3,3]
+    ]
+
+    blocks.forEach((block, index) => {
+      this.remove(indexOptions, [block.xIndex, block.yIndex])
+    })
+
+    var randomIndex = Math.floor(Math.random() * indexOptions.length)
+    var Index = indexOptions[randomIndex]
+    const newBlock = { xIndex: Index[0], yIndex: Index[1], value: this.generateNumber(), merged: false }
 
     return newBlock
   }
 
   remove(array, element) {
-      const index = array.indexOf(element)
-      array.splice(index, 1)
-      return array
+      const index = array.indexOf(element);
+      array.splice(index, 1);
   }
 
   render() {
+    const blocks = this.state.blocks
     return (
-      <div className="Board">
-        <BlockGrid />
-        { this.state.blocks.map((block, index) => {
-          return <Block key={ index } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.hide }/>
+      <div className="Blocks">
+        { blocks.map((block, index) => {
+          return <Block key={ index } xIndex={ block.xIndex} yIndex={ block.yIndex } value={ block.value } />
           })
         }
       </div>
@@ -228,4 +209,4 @@ class Board extends PureComponent {
   }
 }
 
-export default Board
+export default Blocks
