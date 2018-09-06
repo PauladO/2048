@@ -4,7 +4,7 @@ import './EmptyBlock.css'
 class EmptyBlock extends PureComponent {
   render() {
     return (
-      <div className="EmptyBlock Value-0" >
+      <div className="EmptyBlock" >
       </div>
     )
   }
