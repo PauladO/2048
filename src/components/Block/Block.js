@@ -2,10 +2,6 @@ import React, { PureComponent } from 'react'
 import './Block.css'
 
 class Block extends PureComponent {
-  componentWillUpdate() {
-
-  }
-
   constructClassName() {
     var klassName = "Block Value-" + this.props.value
     klassName += " x-" + this.props.xIndex
@@ -15,6 +11,7 @@ class Block extends PureComponent {
     }
     return klassName
   }
+
 
   constructBlock() {
     const klassName = this.constructClassName()

@@ -5,6 +5,7 @@ div.Block {
   border-radius: 3%;
   text-align: center;
   color: white;
+  transition: transform 1500ms ease-in-out;
   position: absolute;
 }
 
@@ -50,7 +51,8 @@ h1.Value {
 }
 
 div.dead-block {
-  display: none;
+  z-index: 0;
+  opacity: 0;
 }
 
 div.Value-2 {

@@ -6,37 +6,36 @@ import './Board.css'
 class Board extends PureComponent {
   constructor(props){
     super(props);
-    this.handleMove = this.handleMove.bind(this);
+    this.handleDirection = this.handleDirection.bind(this);
     this.hasMoved = false
+    this.blockCount = 0
   }
 
-  handleMove(event){
-    if(event.keyCode === 37) {
-      this.moveLeft()
+  handleDirection(event){
+    if(event.keyCode === 37) { // left
+      this.move("left")
     }
-    console.log(this.state.blocks);
-  //  if(event.keyCode === 38) {
-  //     this.moveUp(newGrid)
-  //   }
-  //  if(event.keyCode === 39) {
-  //     this.moveRight(newGrid)
-  //   }
-  //  if(event.keyCode === 40) {
-  //     this.moveDown(newGrid)
-  //   }
+   if(event.keyCode === 38) { // up
+     this.move("up")
+    }
+   if(event.keyCode === 39) { // right
+      this.move("right")
+   }
+   if(event.keyCode === 40) { // down
+      this.move("down")
+    }
   }
 
   componentDidMount(){
-    document.addEventListener("keydown", this.handleMove, false);
+    document.addEventListener("keydown", this.handleDirection, false);
   }
   componentWillUnmount(){
-    document.removeEventListener("keydown", this.handleMove, false);
+    document.removeEventListener("keydown", this.handleDirection, false);
   }
 
   componentWillMount() {
     this.setStartState()
   }
-
 
   setStartState() {
     const blocks = []
@@ -65,108 +64,133 @@ class Board extends PureComponent {
     }
   }
 
-  killBlock(xIndex, yIndex) {
-    this.state.blocks.find((block) => { return block.yIndex === yIndex && block.xIndex === xIndex && block.value > 0}).xIndex = -1
-    this.state.blocks.find((block) => { return block.yIndex === yIndex && block.xIndex === xIndex && block.value > 0}).value = 0
+  killBlock(index) {
+    var blocks = this.state.blocks
+    blocks[index].xIndex = -1
+    blocks[index].value = 0
+    this.setState({blocks: blocks})
   }
 
-  moveBlock(block) {
-    for (var i = 0; i < block.xIndex; i++)  {
-      var blockAtIndex = this.state.blocks.find((blck) => { return blck.yIndex === block.yIndex && blck.xIndex === i && blck.value > 0})
+  moveBlock(block, index, xDirection, yDirection) {
+    var finished = false
 
-      if (blockAtIndex && blockAtIndex.value === block.value && !blockAtIndex.merged) {
+    while (true) {
+      var blockAtIndex = this.getBlockAtIndex(block, xDirection, yDirection)
+      if (this.hitsSameValueBlock(blockAtIndex, block)) {
         block.value = block.value * 2
-        block.xIndex = i
+        block = this.setNewCoordinates(block, xDirection, yDirection)
         block.merged = true
-        this.killBlock(i, block.yIndex)
-
+        this.killBlock(this.state.blocks.indexOf(blockAtIndex))
         this.hasMoved = true
         break
-      } else if (blockAtIndex) {
+      } else if (this.finishedMoving(blockAtIndex, block, xDirection, yDirection)) {
+        break
       } else {
-        block.xIndex = i
+        block = this.setNewCoordinates(block, xDirection, yDirection)
         this.hasMoved = true
-
-        break
       }
+
+      this.setState({blocks: this.setNewBlock(block, index)})
     }
+
     return block
   }
 
-  moveBlocksLeft() {
-    var updatedBlocks = this.state.blocks.map((block, index) => {
-      if(block.value > 0) {
-        block.merged = false
+  getBlockAtIndex(block, xDirection, yDirection) {
+    return (this.state.blocks.find((blck) => { return blck.yIndex === (block.yIndex + yDirection)  && blck.xIndex === (block.xIndex + xDirection) && blck.value > 0}))
+  }
 
-        this.moveBlock(block)
-      }
+  setNewBlock(block, index) {
+    var stateBlocks = this.state.blocks
+    stateBlocks[index] = block
+    return stateBlocks
+  }
+
+  setNewCoordinates(block, xDirection, yDirection) {
+    block.xIndex += xDirection
+    block.yIndex += yDirection
+    return block
+  }
+
+  finishedMoving(blockAtIndex, block, xDirection, yDirection) {
+    return (!!blockAtIndex || (block.xIndex + xDirection) < 0 || (block.xIndex + xDirection) > 3 || (block.yIndex + yDirection) < 0 || (block.yIndex + yDirection) > 3)
+  }
+
+  setXDirection(direction) {
+    if (direction === "left") {
+      return -1
+    } else if (direction === "right") {
+      return 1
+    } else {
+      return 0
+    }
+  }
+
+  setYDirection(direction) {
+    if (direction === "up") {
+      return -1
+    } else if (direction === "down") {
+      return 1
+    } else {
+      return 0
+    }
+  }
+
+  sortBlocksForDirection(direction) {
+    if (direction === "left") {
+      return this.state.blocks.sort((block1, block2) => { return block1.xIndex - block2.xIndex })
+    } else if (direction === "right") {
+      return this.state.blocks.sort((block1, block2) => { return block2.xIndex - block1.xIndex })
+    } else if (direction === "up") {
+      return this.state.blocks.sort((block1, block2) => { return block1.yIndex - block2.yIndex })
+    } else if (direction === "down") {
+      return this.state.blocks.sort((block1, block2) => { return block2.yIndex - block1.yIndex })
+    }
+  }
+
+  moveBlocks(direction) {
+    var xIndex = this.setXDirection(direction)
+    var yIndex = this.setYDirection(direction)
+
+    var sortedBlocks = this.sortBlocksForDirection(direction)
+    var updatedBlocks = sortedBlocks.map((block, index) => {
+      this.moveBlock(block, index, xIndex, yIndex)
 
       return block
     })
 
-    if(this.hasMoved) {
-      updatedBlocks.push(this.generateBlock(updatedBlocks))
-    }
     return updatedBlocks
   }
 
-
-  moveLeft() {
-    var newBlocks  = this.moveBlocksLeft()
-
+  move(direction) {
+    var newBlocks = this.moveBlocks(direction)
+    if (this.hasMoved) {
+      newBlocks.push(this.generateBlock(newBlocks))
+      this.hasMoved = false
+    }
     this.setBoard(newBlocks)
-
   }
 
-  setBoard(newBlocks) {
-    this.setState({blocks: newBlocks}) //Moves blocks
-    const blocks = newBlocks.filter(block => { block.value > 0 })
-    this.setState({blocks: newBlocks}) //Moves blocks
-  }
 
-  // moveRight(newGrid) {
-  //   this.state.blocks.forEach((line, lineIndex) => {
-  //     var lastPlacedAt = 4
-  //     line.reverse().forEach((block, blockIndex) => {
-  //       if(block > 0 && block == newGrid[lineIndex][lastPlacedAt]) {
-  //         newGrid[lineIndex][lastPlacedAt] = block * 2
-  //       } else if(block > 0) {
-  //         lastPlacedAt--
-  //         newGrid[lineIndex][lastPlacedAt] = block
-  //       }
-  //     })
-  //   })
-  //
-  //   var newBlocks = this.generateBlock(newGrid, 1)
-  //
-  //   this.setState({blocks: newBlocks})
-  // }
-  //
-  // moveUp(newGrid) {
-  //   for(var i = 0; i < 4; i++){
-  //     var lastPlacedAt = this.startIndex()
-  //     for(var j = 0; j < 4; j++) {
-  //       var currentBlock = this.state.blocks[j][i]
-  //       if(this.hitsSameValueBlock(currentBlock, newGrid[lastPlacedAt], i)) {
-  //         newGrid[lastPlacedAt][i] =  this.doubleBlockValue(j, i)
-  //       } else if(this.blockHasValue(currentBlock)) {
-  //         lastPlacedAt++
-  //         newGrid[lastPlacedAt][i] = currentBlock
-  //       }
-  //     }
-  //   }
-  //
-  //   var newBlocks = this.generateBlock(newGrid, 1)
-  //
-  //   this.setState({blocks: newBlocks})
-  // }
+
+  setBoard(blocks) {
+    this.setState({blocks: blocks}) //Moves blocks
+
+    blocks = blocks.filter(block => { return block.value > 0 })
+    blocks = blocks.map((block) => {
+      block.merged = false
+      return block
+    })
+
+    this.setState({blocks: blocks}) //Moves blocks
+  }
 
   blockHasValue(currentBlock) {
     return currentBlock > 0
   }
 
-  hitsSameValueBlock(currentBlock, line, xIndex) {
-    return currentBlock > 0 && line && currentBlock === line[xIndex]
+  hitsSameValueBlock(block1, block2) {
+    return (!!block1) && block2.value > 0 && block1.value > 0 && block2.value === block1.value && !block2.merged
   }
 
   doubleBlockValue(xIndex, yIndex) {
@@ -181,25 +205,6 @@ class Board extends PureComponent {
     return 4
   }
 
-  // moveDown(newGrid) {
-  //   for(var i = 0; i < 4; i++){
-  //     var lastPlacedAt = this.endIndex()
-  //     for(var j = 3; j >= 0; j--) {
-  //       var currentBlock = this.state.blocks[j][i]
-  //       if(this.hitsSameValueBlock(currentBlock, newGrid[lastPlacedAt], i)) {
-  //         newGrid[lastPlacedAt][i] = currentBlock *2
-  //       } else if(this.blockHasValue(currentBlock)) {
-  //         lastPlacedAt--
-  //         newGrid[lastPlacedAt][i] = currentBlock
-  //       }
-  //     }
-  //   }
-  //
-  //   var newBlocks = this.generateBlock(newGrid, 1)
-  //   this.setState({blocks: newBlocks})
-  // }
-
-
   availableCoordinates(blocks) {
     var coordinates = [
       [ 0,0 ], [0,1], [0,2], [0,3],
@@ -208,11 +213,10 @@ class Board extends PureComponent {
       [ 3,0 ], [3,1], [3,2], [3,3],
     ]
 
-    blocks.forEach((block, index) => {
-      coordinates[block.yIndex * 3 + block.xIndex] = false
+    blocks.forEach((block) => {
+      	coordinates = coordinates.filter((coordinate) => { return !(coordinate[0] === block.xIndex && coordinate[1] === block.yIndex)})
     })
-
-    return coordinates.filter((coordinate, index) => {return coordinate !== false})
+    return coordinates
   }
 
   generateBlock(blocks) {
@@ -221,8 +225,12 @@ class Board extends PureComponent {
     var randomIndex = Math.floor(Math.random() * available.length)
 
     var coordinates = available[randomIndex]
+    if (coordinates.count === 0) {
+      return null
+    }
 
-    const newBlock = { xIndex: coordinates[0], yIndex: coordinates[1], value: this.generateNumber(), merged: false }
+    const newBlock = { xIndex: coordinates[0], yIndex: coordinates[1], value: this.generateNumber(), merged: false, id: this.blockCount }
+    this.blockCount ++
 
     return newBlock
   }
@@ -238,7 +246,7 @@ class Board extends PureComponent {
       <div className="Board">
         <BlockGrid />
         { this.state.blocks.map((block, index) => {
-          return <Block key={ index } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead }/>
+          return <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead }/>
           })
         }
       </div>
