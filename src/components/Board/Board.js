@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import BlockGrid from '../BlockGrid/BlockGrid'
 import Block from '../Block/Block'
 import './Board.css'
@@ -67,13 +68,11 @@ class Board extends PureComponent {
   killBlock(index) {
     var blocks = this.state.blocks
     blocks[index].xIndex = -1
-    blocks[index].value = 0
+
     this.setState({blocks: blocks})
   }
 
   moveBlock(block, index, xDirection, yDirection) {
-    var finished = false
-
     while (true) {
       var blockAtIndex = this.getBlockAtIndex(block, xDirection, yDirection)
       if (this.hitsSameValueBlock(blockAtIndex, block)) {
@@ -154,8 +153,10 @@ class Board extends PureComponent {
 
     var sortedBlocks = this.sortBlocksForDirection(direction)
     var updatedBlocks = sortedBlocks.map((block, index) => {
+      block.new = false
+      block.prevXIndex = block.xIndex
+      block.prevYIndex = block.yIndex
       this.moveBlock(block, index, xIndex, yIndex)
-
       return block
     })
 
@@ -171,12 +172,10 @@ class Board extends PureComponent {
     this.setBoard(newBlocks)
   }
 
-
-
   setBoard(blocks) {
     this.setState({blocks: blocks}) //Moves blocks
 
-    blocks = blocks.filter(block => { return block.value > 0 })
+    blocks = blocks.filter(block => { return !block.dead })
     blocks = blocks.map((block) => {
       block.merged = false
       return block
@@ -190,7 +189,7 @@ class Board extends PureComponent {
   }
 
   hitsSameValueBlock(block1, block2) {
-    return (!!block1) && block2.value > 0 && block1.value > 0 && block2.value === block1.value && !block2.merged
+    return (!!block1) && block2.value > 0 && block1.value > 0 && block2.value === block1.value && !block2.merged && !block1.merged
   }
 
   doubleBlockValue(xIndex, yIndex) {
@@ -229,7 +228,7 @@ class Board extends PureComponent {
       return null
     }
 
-    const newBlock = { xIndex: coordinates[0], yIndex: coordinates[1], value: this.generateNumber(), merged: false, id: this.blockCount }
+    const newBlock = { xIndex: coordinates[0], yIndex: coordinates[1], value: this.generateNumber(), merged: false, id: this.blockCount, new: true }
     this.blockCount ++
 
     return newBlock
@@ -241,12 +240,43 @@ class Board extends PureComponent {
       return array
   }
 
+  setMovement(block) {
+    let {xIndex, yIndex, prevYIndex, prevXIndex} = block
+    let xPosition = 17.5 + (xIndex * 140)
+    let yPosition = 17.5 + (yIndex * 140)
+
+    let ease = ((prevXIndex - xIndex) + (prevYIndex - yIndex)) * 0.2
+    ease = Math.sqrt(Math.pow(ease, 2))
+
+    return [xPosition, yPosition, ease]
+  }
+
+
   render() {
+    const transitionOptions = {
+      transitionName: "fade",
+      transitionEnterTimeout: 200,
+      transitionLeaveTimeout: 1,
+    }
+
     return (
       <div className="Board">
         <BlockGrid />
-        { this.state.blocks.map((block, index) => {
-          return <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead }/>
+        { this.state.blocks.filter(block => block.new).map((block, index) => {
+            return(
+              <ReactCSSTransitionGroup key={ index } {...transitionOptions}>
+                <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead }/>
+              </ReactCSSTransitionGroup>
+            )
+          })
+        }
+        { this.state.blocks.filter(block => !block.new).map((block, index) => {
+          let movement = this.setMovement(block)
+          console.log(`${block.dead}: ${block.prevXIndex} => ${block.xIndex}, ${block.prevYIndex} => ${block.yIndex}`);
+            return(
+              <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead } style={{transform: `translate3d(${movement[0]}px,${movement[1]}px,0) scale(1)`}}/>
+
+            )
           })
         }
       </div>

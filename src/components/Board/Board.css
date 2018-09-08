@@ -7,3 +7,97 @@ div.Board {
   box-sizing: border-box;
   padding: 17.5px 0 0 17.5px;
 }
+
+
+
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter.fade-enter-active{
+  opacity: 2;
+  transition: .2s ease-in all;
+}
+
+.dead-enter {
+  opacity: 0;
+}
+
+.dead-enter.dead-enter-active{
+  opacity: 0;
+  transition: .1s ease-in all;
+}
+
+/* MOVING */
+/* horizontal */
+
+/*
+.move-*-*To-*-*-enter.move-*-*To-*-*-enter-active{
+  transition: .5s ease-in all;
+}
+
+.move-0-*To-*-*-enter {
+  left: 17.5px;
+}
+
+.move-1-*To-*-*-enter {
+  left: 162.5px;
+}
+
+.move-2-*To-*-*-enter {
+  left: 307.5px;
+}
+
+.move-3-*To-*-*-enter {
+  left: 452.5px;
+}
+
+.move-*-*To-0-*-enter.move-*-*To-0-*-enter-active{
+  left: 17.5px;
+}
+
+.move-*-*To-1-*-enter.move-*-*To-1-*-enter-active{
+  left: 162.5px;
+}
+
+.move-*-*To-2-*-enter.move-*-*To-2-*-enter-active{
+  left: 307.5px;
+}
+
+.move-*-*To-3-*-enter.move-*-*To-3-*-enter-active{
+  left: 452.5px;
+}
+
+
+/*vertical*/
+/*.move-*-0To-*-*-enter {
+  top: 17.5px;
+}
+
+.move-*-1To-*-*-enter {
+  top: 162.5px;
+}
+
+.move-*-2To-*-*-enter {
+  top: 307.5px;
+}
+
+.move-*-3To-*-*-enter {
+  top: 452.5px;
+}
+
+.move-*-*To-*-0-enter.move-*-*To-*-0-enter-active{
+  top: 17.5px;
+}
+
+.move-*-*To-*-1-enter.move-*-*To-*-1-enter-active{
+  top: 162.5px;
+}
+
+.move-*-*To-*-2-enter.move-*-*To-*-2-enter-active{
+  top: 307.5px;
+}
+
+.move-*-*To-*-3-enter.move-*-*To-*-3-enter-active{
+  top: 452.5px;
+}*/

@@ -12,9 +12,9 @@ class Block extends PureComponent {
     return klassName
   }
 
-
   constructBlock() {
     const klassName = this.constructClassName()
+
     return(
       <div className={ klassName } >
         <h1 className="Value">
@@ -26,9 +26,10 @@ class Block extends PureComponent {
 
   render() {
     const block = this.constructBlock()
+
     return (
       <div>
-        { block }
+          { block }
       </div>
     )
   }
