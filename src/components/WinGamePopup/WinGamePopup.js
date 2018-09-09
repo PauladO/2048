@@ -5,7 +5,7 @@ import './WinGamePopup.css'
 class WinGamePopup extends PureComponent {
 
   render() {
-    const style = this.props.gameFinished ? {} : {}
+    const style = this.props.gameFinished ? {} : {display: "none"}
     return (
       <div className="WinGamePopup" style={ style }>
           <h1>You win!</h1>
