@@ -6,12 +6,10 @@ div.Block {
   text-align: center;
   color: white;
   position: absolute;
-  transition: all .3s ease-in;
+  transition: all .3s ease;
 }
 
-.x--1 {
-    opacity: 0;
-}
+
 
 .x-0 {
   left: 17.5px;
@@ -52,6 +50,11 @@ h1.Value {
 
 div.dead-block {
   z-index: 0;
+}
+
+div.dead-block h1 {
+  opacity: 0;
+  transition: all .3s ease-in;
 }
 
 div.Value-2 {

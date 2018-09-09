@@ -67,8 +67,7 @@ class Board extends PureComponent {
 
   killBlock(index) {
     var blocks = this.state.blocks
-    blocks[index].xIndex = -1
-
+    blocks[index].dead = true
     this.setState({blocks: blocks})
   }
 
@@ -166,7 +165,9 @@ class Board extends PureComponent {
   move(direction) {
     var newBlocks = this.moveBlocks(direction)
     if (this.hasMoved) {
-      newBlocks.push(this.generateBlock(newBlocks))
+      if (this.availableCoordinates(newBlocks).length > 0) {
+        newBlocks.push(this.generateBlock(newBlocks))
+      }
       this.hasMoved = false
     }
     this.setBoard(newBlocks)
@@ -189,7 +190,7 @@ class Board extends PureComponent {
   }
 
   hitsSameValueBlock(block1, block2) {
-    return (!!block1) && block2.value > 0 && block1.value > 0 && block2.value === block1.value && !block2.merged && !block1.merged
+    return (!!block1) && !block2.dead && !block1.dead && block2.value === block1.value && !block2.merged && !block1.merged
   }
 
   doubleBlockValue(xIndex, yIndex) {
@@ -220,6 +221,9 @@ class Board extends PureComponent {
 
   generateBlock(blocks) {
     var available = this.availableCoordinates(blocks)
+    if(available.length === 0) {
+      return null
+    }
 
     var randomIndex = Math.floor(Math.random() * available.length)
 
@@ -246,7 +250,7 @@ class Board extends PureComponent {
     let yPosition = 17.5 + (yIndex * 140)
 
     let ease = ((prevXIndex - xIndex) + (prevYIndex - yIndex)) * 0.2
-    ease = Math.sqrt(Math.pow(ease, 2))
+    ease = Math.sqrt(Math.pow(ease, 2)).toPrecision(1)
 
     return [xPosition, yPosition, ease]
   }
@@ -262,7 +266,7 @@ class Board extends PureComponent {
     return (
       <div className="Board">
         <BlockGrid />
-        { this.state.blocks.filter(block => block.new).map((block, index) => {
+        { this.state.blocks.filter((block) => { return block.new }).map((block, index) => {
             return(
               <ReactCSSTransitionGroup key={ index } {...transitionOptions}>
                 <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead }/>
@@ -270,11 +274,14 @@ class Board extends PureComponent {
             )
           })
         }
-        { this.state.blocks.filter(block => !block.new).map((block, index) => {
+        { this.state.blocks.filter((block) => { return !block.new }).map((block, index) => {
           let movement = this.setMovement(block)
-          console.log(`${block.dead}: ${block.prevXIndex} => ${block.xIndex}, ${block.prevYIndex} => ${block.yIndex}`);
+          if (block.xIndex !== block.prevXIndex || block.yIndex !== block.prevYIndex) {
+            console.log(`${block.prevXIndex} => ${block.xIndex}, ${block.prevYIndex} => ${block.yIndex} ==> ${movement}`);
+          }
+
             return(
-              <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead } style={{transform: `translate3d(${movement[0]}px,${movement[1]}px,0) scale(1)`}}/>
+              <Block key={ block.id } id={ block.id } xIndex={ block.xIndex } yIndex={ block.yIndex } value={ block.value } hide={ block.dead } style={{transform: `translate(${movement[0]}px,${movement[1]}px)`, transition: `all ${movement[2]}s ease`}}/>
 
             )
           })
