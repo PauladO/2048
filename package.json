@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "license": "UNLICENSED",
+  "homepage": "http://pauladenouden.nl/2048",
   "dependencies": {
     "@material-ui/core": "^3.0.3",
     "glamor": "^2.20.40",
