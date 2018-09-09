@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import BlockGrid from '../BlockGrid/BlockGrid'
+import WinGamePopup from '../WinGamePopup/WinGamePopup'
 import Block from '../Block/Block'
 import './Board.css'
 
@@ -10,6 +11,17 @@ class Board extends PureComponent {
     this.handleDirection = this.handleDirection.bind(this);
     this.hasMoved = false
     this.blockCount = 0
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.handleDirection, false);
+  }
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.handleDirection, false);
+  }
+
+  componentWillMount() {
+    this.setStartState()
   }
 
   handleDirection(event){
@@ -25,17 +37,6 @@ class Board extends PureComponent {
    if(event.keyCode === 40) { // down
       this.move("down")
     }
-  }
-
-  componentDidMount(){
-    document.addEventListener("keydown", this.handleDirection, false);
-  }
-  componentWillUnmount(){
-    document.removeEventListener("keydown", this.handleDirection, false);
-  }
-
-  componentWillMount() {
-    this.setStartState()
   }
 
   setStartState() {
@@ -80,6 +81,9 @@ class Board extends PureComponent {
         block.merged = true
         this.killBlock(this.state.blocks.indexOf(blockAtIndex))
         this.hasMoved = true
+        if (block.value === 2048) {
+          this.endGame()
+        }
         break
       } else if (this.finishedMoving(blockAtIndex, block, xDirection, yDirection)) {
         break
@@ -255,6 +259,13 @@ class Board extends PureComponent {
     return [xPosition, yPosition, ease]
   }
 
+  endGame() {
+    document.removeEventListener("keydown", this.handleDirection, false);
+
+    this.setState({
+      gameFinished: true
+    })
+  }
 
   render() {
     const transitionOptions = {
@@ -286,6 +297,8 @@ class Board extends PureComponent {
             )
           })
         }
+
+        <WinGamePopup gameFinished={ this.state.gameFinished } />
       </div>
     )
   }

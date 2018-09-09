@@ -1,9 +1,10 @@
 {
   "name": "2048",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "UNLICENSED",
   "dependencies": {
+    "@material-ui/core": "^3.0.3",
     "glamor": "^2.20.40",
     "glamour": "^1.2.3",
     "prop-types": "^15.6.2",
